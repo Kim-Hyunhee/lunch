@@ -1,14 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private userService: UsersService,
+    private jwtService: JwtService,
   ) {}
 
   // 회원가입 로직
@@ -37,6 +44,37 @@ export class AuthService {
       success: true,
       message: '회원가입이 완료되었습니다.',
       user: userWithoutPassword,
+    };
+  }
+
+  // 로그인 로직
+  async login(data: LoginDto) {
+    // 사용자 확인
+    const user = await this.userService.findUserByUsername(data.username);
+    if (!user) {
+      throw new NotFoundException('가입되지 않은 계정입니다.');
+    }
+
+    // 비밀번호 검증
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('비밀번호가 틀렸습니다.');
+    }
+
+    // JwtToken 발급 (payload: { id: number; username: string })
+    const accessToken = this.jwtService.sign(
+      { sub: user.id, username: user.username },
+      { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '1h' },
+    );
+
+    const { password, ...otherUserData } = user;
+
+    // 성공 응답 반환
+    return {
+      success: true,
+      message: '로그인 되었습니다',
+      data: { accessToken },
+      user: otherUserData,
     };
   }
 }

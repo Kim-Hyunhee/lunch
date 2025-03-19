@@ -48,7 +48,7 @@ export class RegisterDto {
   company: string;
 }
 
-class UserResponseDto {
+export class UserResponseDto {
   @ApiProperty({ example: 1 })
   id: number;
 

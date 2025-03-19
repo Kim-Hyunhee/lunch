@@ -5,10 +5,20 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async checkUsernameAvailability(username: string): Promise<boolean> {
-    const user = await this.prisma.user.findFirst({ where: { username } });
+  // 공통 메서드로 findFirst 처리
+  private async findUser(where: { username: string }) {
+    return this.prisma.user.findFirst({ where });
+  }
 
-    // 아이디가 이미 존재하면 false 반환
-    return user ? false : true;
+  // 아이디 중복 체크
+  async checkUsernameAvailability(username: string): Promise<boolean> {
+    const user = await this.findUser({ username });
+
+    return !user; // user가 있으면 false, 없으면 true
+  }
+
+  // 사용자 정보 찾기
+  async findUserByUsername(username: string) {
+    return this.findUser({ username });
   }
 }
