@@ -7,7 +7,7 @@ import {
 } from './dto/create-product-prices.dto';
 
 @Controller('admin/product-price')
-@ApiTags('admin/product-price')
+@ApiTags('product-price')
 export class AdminProductPricesController {
   constructor(private productPriceService: ProductPricesService) {}
 

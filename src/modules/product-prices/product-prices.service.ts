@@ -98,4 +98,49 @@ export class ProductPricesService {
       throw new Error('상품 가격 설정 중 오류가 발생했습니다.');
     }
   }
+
+  async getProductPriceForUser(productId: number, userId: number) {
+    return this.prisma.productPrice.findFirst({
+      where: {
+        productId, // 상품 ID
+        userId, // 사용자 ID
+      },
+    });
+  }
+
+  async findManyProduct(userId: number) {
+    // 외부 API에서 상품 목록 가져오기
+    try {
+      const { data: response } = await this.INSTANCE.get('/products');
+
+      // 각 상품에 대해 가격과 구매 가능 여부를 처리
+      const productsWithPrices = await Promise.all(
+        response.data.map(async (product) => {
+          const productPrice = await this.getProductPriceForUser(
+            product.id,
+            userId,
+          );
+
+          // 가격 정책이 없다면 기본 가격을 사용
+          const finalPrice = productPrice ? productPrice.price : product.price;
+          const isHidden = productPrice ? productPrice.hidden : false;
+
+          return {
+            ...product,
+            price: finalPrice,
+            hidden: isHidden,
+          };
+        }),
+      );
+
+      // hidden이 true인 상품은 제외
+      return productsWithPrices.filter((product) => !product.hidden);
+    } catch (error) {
+      console.error('Error Status:', error.response?.status);
+      console.error('Error Message:', error.response?.data?.error?.message);
+      console.error('Error Headers:', error.response?.headers);
+
+      throw new Error('상품 목록 조회 중 오류가 발생했습니다.');
+    }
+  }
 }
