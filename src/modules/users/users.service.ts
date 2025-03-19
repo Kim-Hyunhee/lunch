@@ -6,7 +6,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   // 공통 메서드로 findFirst 처리
-  private async findUser(where: { username: string }) {
+  private async findUser(where: { username?: string; id?: number }) {
     return this.prisma.user.findFirst({ where });
   }
 
@@ -20,5 +20,10 @@ export class UsersService {
   // 사용자 정보 찾기
   async findUserByUsername(username: string) {
     return this.findUser({ username });
+  }
+
+  // 사용자 정보 찾기
+  async findUserByUserId(id: number) {
+    return this.findUser({ id });
   }
 }
