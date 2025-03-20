@@ -1,16 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
-class Item {
+class Items {
   @ApiProperty({
-    example: 1,
-    description: '주문 ID',
+    example: 5,
+    description: '주문 항목 ID',
   })
   id: number;
 
@@ -27,13 +21,13 @@ class Item {
   productName: string;
 
   @ApiProperty({
-    example: 10,
+    example: 1,
     description: '주문한 상품 수량',
   })
   quantity: number;
 
   @ApiProperty({
-    example: 100000,
+    example: 9000,
     description: '주문한 상품 금액',
   })
   amount: number;
@@ -49,18 +43,18 @@ export class FindOrderDto {
   deliveryDate: string;
 }
 
-export class OrderResponseDto {
+class OrdersResponseDto {
   @ApiProperty({ example: 1 })
   id: number;
 
   @ApiProperty({ example: '2025-02-20' })
   deliveryDate: string;
 
-  @ApiProperty({ example: 140000 })
+  @ApiProperty({ example: 9000 })
   totalAmount: number;
 
-  @ApiProperty({ example: [Item] })
-  items: Item;
+  @ApiProperty({ type: [Items] })
+  items: Items[];
 
   @ApiProperty({ example: '2025-03-19T12:00:00Z' })
   createdAt: string;
@@ -76,6 +70,6 @@ export class FindOrderResponseDto {
   @ApiProperty({ example: '주문 조회가 완료되었습니다.' })
   message: string;
 
-  @ApiProperty({ type: OrderResponseDto })
-  order: OrderResponseDto;
+  @ApiProperty({ type: OrdersResponseDto })
+  order: OrdersResponseDto;
 }

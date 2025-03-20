@@ -36,7 +36,7 @@ export class CreateOrderDto {
 
   @ApiProperty({
     description: '주문할 상품 목록',
-    type: Item,
+    type: [Item],
   })
   @IsNotEmpty({ message: '상품 ID를 입력해주세요.' })
   items: Item[];
@@ -52,25 +52,25 @@ export class CreateOrderDto {
 }
 
 export class OrderResponseDto {
-  @ApiProperty({ example: 1 })
-  id: number;
+  @ApiProperty({ example: 5 })
+  orderId: number;
 
   @ApiProperty({ example: '2025-02-20' })
   deliveryDate: string;
 
-  @ApiProperty({ example: 2 })
+  @ApiProperty({ example: 3 })
   userId: number;
 
   @ApiProperty({ example: '배송 시 문 앞에 두어주세요' })
-  commnet: string;
+  comment: string;
 
-  @ApiProperty({ example: [Item] })
-  items: Item;
+  @ApiProperty({ type: [Item] })
+  items: Item[];
 
-  @ApiProperty({ example: '2025-03-19T12:00:00Z' })
+  @ApiProperty({ example: '2025-03-20T04:55:04.823Z' })
   createdAt: string;
 
-  @ApiProperty({ example: '2025-03-19T12:00:00Z' })
+  @ApiProperty({ example: '2025-03-20T04:55:04.823Z' })
   updatedAt: string;
 }
 

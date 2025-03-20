@@ -43,7 +43,10 @@ export class OrdersController {
     description: '유효성 검사 실패',
     schema: {
       example: {
-        message: ['상품ID, 배송 요청일, 상품 수량을 입력해주세요.'],
+        message: [
+          '상품ID, 배송 요청일, 상품 수량을 입력해주세요.',
+          '유효하지 않은 상품이 포함되어 있습니다: ',
+        ],
         error: 'Bad Request',
         statusCode: 400,
       },
