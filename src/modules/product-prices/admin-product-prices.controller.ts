@@ -12,14 +12,14 @@ export class AdminProductPricesController {
   constructor(private productPriceService: ProductPricesService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: ' 회원 별 상품 판매 정책 설정',
-    description: ' 회원 별 상품 판매 정책 설정을 등록 합니다.',
+    summary: '회원 별 상품 판매 정책 설정',
+    description: '회원 별 상품 판매 정책 설정을 등록 합니다.',
   })
   @ApiResponse({
-    status: 201,
-    description: ' 회원 별 상품 판매 정책 설정 성공',
+    status: 200,
+    description: '회원 별 상품 판매 정책 설정 성공',
     type: CreateProductPriceResponseDto,
   })
   @ApiResponse({
