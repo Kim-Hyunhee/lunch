@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  ParseDatePipe,
   Post,
   Query,
   UseGuards,
@@ -17,7 +18,7 @@ import {
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, CreateOrderResponseDto } from './dto/create-order.dto';
-import { CurrentUser } from 'src/decorators/currentUser.dto';
+import { CurrentUser } from '../../decorators/currentUser.dto';
 import { FindOrderDto, FindOrderResponseDto } from './dto/find-order.dto';
 
 @Controller('orders')
@@ -101,7 +102,7 @@ export class OrdersController {
     },
   })
   async getOrder(
-    @Query() { deliveryDate }: FindOrderDto,
+    @Query(new ParseDatePipe()) { deliveryDate }: FindOrderDto,
     @CurrentUser() userId: number,
   ) {
     return await this.orderService.findOrder(deliveryDate, userId);
