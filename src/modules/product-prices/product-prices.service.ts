@@ -143,4 +143,12 @@ export class ProductPricesService {
       throw new Error('상품 목록 조회 중 오류가 발생했습니다.');
     }
   }
+
+  async getManyProductPriceForUser(userId: number) {
+    return this.prisma.productPrice.findMany({
+      where: {
+        userId, // 사용자 ID
+      },
+    });
+  }
 }

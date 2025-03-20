@@ -8,5 +8,6 @@ import { UserProductPricesController } from './user-product-prices.controller';
 @Module({
   controllers: [AdminProductPricesController, UserProductPricesController],
   providers: [ProductPricesService, PrismaService, UsersService],
+  exports: [ProductPricesService],
 })
 export class ProductPriceModule {}
