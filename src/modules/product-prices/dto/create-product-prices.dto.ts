@@ -25,7 +25,7 @@ export class CreateProductPriceDto {
   })
   @IsOptional()
   @IsNumber()
-  price: number;
+  price?: number;
 
   @ApiProperty({
     example: false,
@@ -34,7 +34,7 @@ export class CreateProductPriceDto {
   })
   @IsOptional()
   @IsBoolean()
-  hidden: boolean;
+  hidden?: boolean;
 }
 
 export class ProductPriceResponseDto {

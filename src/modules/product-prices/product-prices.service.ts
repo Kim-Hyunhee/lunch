@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -91,11 +92,14 @@ export class ProductPricesService {
         };
       }
     } catch (error) {
-      console.error('Error Status:', error.response?.status);
-      console.error('Error Message:', error.response?.data?.error?.message);
-      console.error('Error Headers:', error.response?.headers);
+      console.error('Error occurred in createProductPrice:', error); // 에러 로그 추가
+      // console.error('Error Status:', error.response?.status);
+      // console.error('Error Message:', error.response?.data?.error?.message);
+      // console.error('Error Headers:', error.response?.headers);
 
-      throw new Error('상품 가격 설정 중 오류가 발생했습니다.');
+      throw new InternalServerErrorException(
+        '상품 가격 설정 중 오류가 발생했습니다.',
+      );
     }
   }
 
@@ -136,15 +140,17 @@ export class ProductPricesService {
       // hidden이 true인 상품은 제외
       return productsWithPrices.filter((product) => !product.hidden);
     } catch (error) {
-      console.error('Error Status:', error.response?.status);
-      console.error('Error Message:', error.response?.data?.error?.message);
-      console.error('Error Headers:', error.response?.headers);
+      // console.error('Error Status:', error.response?.status);
+      // console.error('Error Message:', error.response?.data?.error?.message);
+      // console.error('Error Headers:', error.response?.headers);
 
-      throw new Error('상품 목록 조회 중 오류가 발생했습니다.');
+      throw new InternalServerErrorException(
+        '상품 목록 조회 중 오류가 발생했습니다.',
+      );
     }
   }
 
-  async getManyProductPriceForUser(userId: number) {
+  async findManyProductPriceForUser(userId: number) {
     return this.prisma.productPrice.findMany({
       where: {
         userId, // 사용자 ID

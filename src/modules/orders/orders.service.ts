@@ -82,7 +82,7 @@ export class OrdersService {
 
       // 사용자별 가격 정책 가져오기
       const userProductPrices =
-        await this.productPriceService.getManyProductPriceForUser(userId);
+        await this.productPriceService.findManyProductPriceForUser(userId);
 
       // 주문한 상품 목록을 가공
       const items = order.orderItems
