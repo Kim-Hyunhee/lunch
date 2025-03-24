@@ -43,6 +43,17 @@ describe('AdminProductPricesController', () => {
         price: 1000,
         hidden: false,
       };
+      const admin = {
+        id: 3,
+        username: 'username',
+        role: 'admin',
+        name: 'name',
+        password: 'string',
+        phone: 'string',
+        company: 'string',
+        createdAt: new Date('2025-03-19T12:00:00Z'),
+        updatedAt: new Date('2025-03-19T12:00:00Z'),
+      };
 
       const mockResponse = {
         id: 1,
@@ -53,7 +64,7 @@ describe('AdminProductPricesController', () => {
       mockProductPricesService.createProductPrice.mockResolvedValue(
         mockResponse,
       );
-      const result = await controller.postProductPrice(dto);
+      const result = await controller.postProductPrice(dto, admin);
 
       // Then
       expect(result).toEqual(mockResponse);
@@ -66,6 +77,17 @@ describe('AdminProductPricesController', () => {
         userId: 1,
         productId: 1,
       }; // price 또는 hidden 없음
+      const admin = {
+        id: 3,
+        username: 'username',
+        role: 'admin',
+        name: 'name',
+        password: 'string',
+        phone: 'string',
+        company: 'string',
+        createdAt: new Date('2025-03-19T12:00:00Z'),
+        updatedAt: new Date('2025-03-19T12:00:00Z'),
+      };
 
       // When
       mockProductPricesService.createProductPrice.mockRejectedValue({
@@ -75,7 +97,7 @@ describe('AdminProductPricesController', () => {
 
       // Then
       await expect(
-        controller.postProductPrice(dto as CreateProductPriceDto),
+        controller.postProductPrice(dto as CreateProductPriceDto, admin),
       ).rejects.toEqual({
         statusCode: 400,
         message: 'price 또는 hidden은 반드시 포함되어야 합니다.',

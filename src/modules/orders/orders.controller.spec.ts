@@ -28,6 +28,17 @@ describe('OrdersController', () => {
   });
   const findOrderDto = new FindOrderDto();
   findOrderDto.deliveryDate = '2025-02-20';
+  const user = {
+    id: 3,
+    username: 'username',
+    role: 'user',
+    name: 'name',
+    password: 'string',
+    phone: 'string',
+    company: 'string',
+    createdAt: new Date('2025-03-19T12:00:00Z'),
+    updatedAt: new Date('2025-03-19T12:00:00Z'),
+  };
   describe('findOrder', () => {
     it('should return the order details', async () => {
       const mockOrderResponse = {
@@ -51,7 +62,7 @@ describe('OrdersController', () => {
 
       service.findOrder = jest.fn().mockResolvedValue(mockOrderResponse);
 
-      const result = await controller.getOrder(findOrderDto, 3);
+      const result = await controller.getOrder(findOrderDto, user);
       expect(result).toEqual(mockOrderResponse);
     });
 
@@ -61,7 +72,7 @@ describe('OrdersController', () => {
         .mockRejectedValue(
           new NotFoundException('주문 내역을 찾을 수 없습니다.'),
         );
-      await expect(controller.getOrder(findOrderDto, 3)).rejects.toThrow(
+      await expect(controller.getOrder(findOrderDto, user)).rejects.toThrow(
         NotFoundException,
       );
     });

@@ -3,7 +3,7 @@ import { OrdersService } from './orders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProductPricesService } from '../product-prices/product-prices.service';
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { of } from 'rxjs';
 

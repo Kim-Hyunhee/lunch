@@ -94,7 +94,6 @@ export class OrdersService {
       where: { deliveryDate, userId },
       include: { orderItems: true },
     });
-    console.log(allProducts, order);
     if (!order) {
       throw new NotFoundException('주문 내역을 찾을 수 없습니다.');
     }

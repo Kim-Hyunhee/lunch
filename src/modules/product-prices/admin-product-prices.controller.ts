@@ -18,9 +18,9 @@ import {
   CreateProductPriceDto,
   CreateProductPriceResponseDto,
 } from './dto/create-product-prices.dto';
-import { CurrentUser } from 'decorators/currentUser.dto';
+import { CurrentUser } from '../../decorators/currentUser.dto';
 import { User } from '.prisma/client';
-import { JwtAuthGuard } from 'modules/auth/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('admin/product-price')
 @UseGuards(JwtAuthGuard)

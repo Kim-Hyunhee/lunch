@@ -2,11 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductPricesService } from './product-prices.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { of, throwError } from 'rxjs';
 
@@ -70,7 +66,7 @@ describe('ProductPricesService', () => {
 
     it('should throw NotFoundException if user does not exist', async () => {
       const dto = { userId: 2, productId: 1, price: 2000, hidden: false };
-      usersService.findUserByUserId = jest.fn().mockResolvedValue(null);
+      usersService.findUser = jest.fn().mockResolvedValue(null);
 
       await expect(service.createProductPrice(dto)).rejects.toThrow(
         new NotFoundException('해당 사용자는 존재하지 않습니다.'),
@@ -79,7 +75,7 @@ describe('ProductPricesService', () => {
 
     it('should throw NotFoundException if product does not exist', async () => {
       const dto = { userId: 2, productId: 100, price: 2000, hidden: false };
-      usersService.findUserByUserId = jest.fn().mockResolvedValue({ id: 2 });
+      usersService.findUser = jest.fn().mockResolvedValue({ id: 2 });
 
       // httpService.get이 빈 배열을 반환하도록 mock 설정
       httpService.get = jest.fn().mockResolvedValue({ data: { data: [] } });
@@ -91,7 +87,7 @@ describe('ProductPricesService', () => {
 
     it('should create a new product price', async () => {
       const dto = { userId: 2, productId: 1, price: 2000, hidden: false };
-      usersService.findUserByUserId = jest.fn().mockResolvedValue({ id: 2 });
+      usersService.findUser = jest.fn().mockResolvedValue({ id: 2 });
 
       httpService.get = jest
         .fn()

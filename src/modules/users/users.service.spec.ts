@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { BadRequestException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -61,8 +62,8 @@ describe('UsersService', () => {
     });
   });
 
-  describe('findUserByUsername', () => {
-    it('should return user if found', async () => {
+  describe('findUser', () => {
+    it('should return user if found by username', async () => {
       const mockUser = { id: 1, username: 'foundUsername' };
       mockPrismaService.user.findFirst.mockResolvedValue(mockUser);
 
@@ -78,9 +79,16 @@ describe('UsersService', () => {
       });
       expect(result).toBeNull(); // 유저가 없으면 null 반환
     });
-  });
 
-  describe('findUserByUserId', () => {
+    it('should throw BadRequestException if neither id nor username is provided', async () => {
+      try {
+        await service.findUser({});
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('id 또는 username 중 하나는 필수입니다.');
+      }
+    });
+
     it('should return user if found by userId', async () => {
       const mockUser = { id: 1, username: 'foundById' };
       mockPrismaService.user.findFirst.mockResolvedValue(mockUser);
@@ -88,12 +96,12 @@ describe('UsersService', () => {
       const result = await service.findUser({ id: 1 });
       expect(result).toEqual(mockUser); // 해당 유저가 반환되어야 함
     });
+  });
 
-    it('should return null if user not found by userId', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(null);
+  it('should return null if user not found by userId', async () => {
+    mockPrismaService.user.findFirst.mockResolvedValue(null);
 
-      const result = await service.findUser({ id: 999 });
-      expect(result).toBeNull(); // 유저가 없으면 null 반환
-    });
+    const result = await service.findUser({ id: 999 });
+    expect(result).toBeNull(); // 유저가 없으면 null 반환
   });
 });
