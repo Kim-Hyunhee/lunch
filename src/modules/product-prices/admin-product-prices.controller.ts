@@ -1,12 +1,30 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProductPricesService } from './product-prices.service';
 import {
   CreateProductPriceDto,
   CreateProductPriceResponseDto,
 } from './dto/create-product-prices.dto';
+import { CurrentUser } from 'decorators/currentUser.dto';
+import { User } from '.prisma/client';
+import { JwtAuthGuard } from 'modules/auth/guard/jwt-auth.guard';
 
 @Controller('admin/product-price')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JwtToken')
 @ApiTags('product-price')
 export class AdminProductPricesController {
   constructor(private productPriceService: ProductPricesService) {}
@@ -47,7 +65,14 @@ export class AdminProductPricesController {
       },
     },
   })
-  async postProductPrice(@Body() data: CreateProductPriceDto) {
+  async postProductPrice(
+    @Body() data: CreateProductPriceDto,
+    @CurrentUser() user: User,
+  ) {
+    if (user.role === 'user') {
+      throw new UnauthorizedException('관리자만 사용할 수 있습니다.');
+    }
+
     return await this.productPriceService.createProductPrice(data);
   }
 }

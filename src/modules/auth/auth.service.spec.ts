@@ -114,7 +114,7 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should throw NotFoundException if user does not exist', async () => {
       const dto = { username: 'nonexistent', password: 'password123' };
-      usersService.findUserByUsername = jest.fn().mockResolvedValue(null);
+      usersService.findUser = jest.fn().mockResolvedValue(null);
 
       await expect(authService.login(dto)).rejects.toThrow(
         new NotFoundException('가입되지 않은 계정입니다.'),
@@ -123,7 +123,7 @@ describe('AuthService', () => {
 
     it('should throw BadRequestException if password is incorrect', async () => {
       const dto = { username: 'testuser', password: 'wrongPassword' };
-      usersService.findUserByUsername = jest.fn().mockResolvedValue({
+      usersService.findUser = jest.fn().mockResolvedValue({
         id: 1,
         username: 'testuser',
         password: 'hashedPassword',
@@ -143,7 +143,7 @@ describe('AuthService', () => {
 
     it('should successfully log in a user', async () => {
       const dto = { username: 'testuser', password: 'password123' };
-      usersService.findUserByUsername = jest.fn().mockResolvedValue({
+      usersService.findUser = jest.fn().mockResolvedValue({
         id: 1,
         username: 'testuser',
         password: 'hashedPassword',

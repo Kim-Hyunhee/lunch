@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { UsersService } from 'src/modules/users/users.service';
+import { UsersService } from 'modules/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     const { username } = payload;
 
-    const user = await this.userService.findUserByUsername(username);
+    const user = await this.userService.findUser({ username });
     if (!user) {
       throw new UnauthorizedException('탈퇴한 회원이거나 회원이 아닙니다.');
     }

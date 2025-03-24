@@ -50,7 +50,7 @@ export class AuthService {
   // 로그인 로직
   async login(data: LoginDto) {
     // 사용자 확인
-    const user = await this.userService.findUserByUsername(data.username);
+    const user = await this.userService.findUser({ username: data.username });
     if (!user) {
       throw new NotFoundException('가입되지 않은 계정입니다.');
     }
@@ -61,9 +61,9 @@ export class AuthService {
       throw new BadRequestException('비밀번호가 틀렸습니다.');
     }
 
-    // JwtToken 발급 (payload: { id: number; username: string })
+    // JwtToken 발급 (payload: { id: number; username: string; role: string; })
     const accessToken = this.jwtService.sign(
-      { sub: user.id, username: user.username },
+      { sub: user.id, username: user.username, role: user.role },
       { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '1h' },
     );
 

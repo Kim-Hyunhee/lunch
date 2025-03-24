@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ParseDatePipe,
   Post,
   Query,
   UseGuards,
@@ -20,6 +19,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto, CreateOrderResponseDto } from './dto/create-order.dto';
 import { CurrentUser } from '../../decorators/currentUser.dto';
 import { FindOrderDto, FindOrderResponseDto } from './dto/find-order.dto';
+import { User } from '.prisma/client';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -102,9 +102,9 @@ export class OrdersController {
     },
   })
   async getOrder(
-    @Query(new ParseDatePipe()) { deliveryDate }: FindOrderDto,
-    @CurrentUser() userId: number,
+    @Query() { deliveryDate }: FindOrderDto,
+    @CurrentUser() user: User,
   ) {
-    return await this.orderService.findOrder(deliveryDate, userId);
+    return await this.orderService.findOrder(deliveryDate, user.id);
   }
 }

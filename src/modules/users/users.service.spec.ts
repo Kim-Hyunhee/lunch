@@ -66,14 +66,16 @@ describe('UsersService', () => {
       const mockUser = { id: 1, username: 'foundUsername' };
       mockPrismaService.user.findFirst.mockResolvedValue(mockUser);
 
-      const result = await service.findUserByUsername('foundUsername');
+      const result = await service.findUser({ username: 'foundUsername' });
       expect(result).toEqual(mockUser); // 해당 유저가 반환되어야 함
     });
 
     it('should return null if user not found', async () => {
       mockPrismaService.user.findFirst.mockResolvedValue(null);
 
-      const result = await service.findUserByUsername('nonExistingUsername');
+      const result = await service.findUser({
+        username: 'nonExistingUsername',
+      });
       expect(result).toBeNull(); // 유저가 없으면 null 반환
     });
   });
@@ -83,14 +85,14 @@ describe('UsersService', () => {
       const mockUser = { id: 1, username: 'foundById' };
       mockPrismaService.user.findFirst.mockResolvedValue(mockUser);
 
-      const result = await service.findUserByUserId(1);
+      const result = await service.findUser({ id: 1 });
       expect(result).toEqual(mockUser); // 해당 유저가 반환되어야 함
     });
 
     it('should return null if user not found by userId', async () => {
       mockPrismaService.user.findFirst.mockResolvedValue(null);
 
-      const result = await service.findUserByUserId(999);
+      const result = await service.findUser({ id: 999 });
       expect(result).toBeNull(); // 유저가 없으면 null 반환
     });
   });
