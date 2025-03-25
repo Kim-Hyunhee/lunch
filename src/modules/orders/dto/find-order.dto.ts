@@ -70,6 +70,6 @@ export class FindOrderResponseDto {
   @ApiProperty({ example: '주문 조회가 완료되었습니다.' })
   message: string;
 
-  @ApiProperty({ type: OrdersResponseDto })
-  order: OrdersResponseDto;
+  @ApiProperty({ type: [OrdersResponseDto] })
+  order: OrdersResponseDto[];
 }

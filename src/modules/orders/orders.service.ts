@@ -96,48 +96,54 @@ export class OrdersService {
     }
 
     const allProducts = await this.fetchAllProducts();
-    const order = await this.prisma.order.findFirst({
+    const orders = await this.prisma.order.findMany({
       where: { deliveryDate: date, userId },
       include: { orderItems: true },
     });
-    if (!order) {
+    if (orders.length === 0) {
       throw new NotFoundException('주문 내역을 찾을 수 없습니다.');
     }
 
     const userProductPrices =
       await this.productPriceService.findManyProductPriceForUser(userId);
-    const items = order.orderItems
-      .map((item) => {
-        const product = allProducts.find((p) => p.id === item.productId);
-        if (!product) return null;
 
-        const userPricePolicy = userProductPrices.find(
-          (p) => p.productId === item.productId,
-        );
-        if (userPricePolicy?.hidden) return null;
+    const resultOrders = orders.map((order) => {
+      const items = order.orderItems
+        .map((item) => {
+          const product = allProducts.find((p) => p.id === item.productId);
+          if (!product) return null;
 
-        return {
-          id: item.id,
-          productId: item.productId,
-          productName: product.name,
-          quantity: item.quantity,
-          amount: (userPricePolicy?.price ?? product.price) * item.quantity,
-        };
-      })
-      .filter(Boolean);
+          const userPricePolicy = userProductPrices.find(
+            (p) => p.productId === item.productId,
+          );
+          if (userPricePolicy?.hidden) return null;
+
+          return {
+            id: item.id,
+            productId: item.productId,
+            productName: product.name,
+            quantity: item.quantity,
+            amount: (userPricePolicy?.price ?? product.price) * item.quantity,
+          };
+        })
+        .filter(Boolean);
+
+      const totalAmount = items.reduce(
+        (sum, item) => sum + (item as NonNullable<typeof item>).amount,
+        0,
+      );
+      return {
+        id: order.orderId,
+        deliveryDate: order.deliveryDate,
+        totalAmount,
+        items,
+      };
+    });
 
     return {
       success: true,
       message: '주문 조회가 완료되었습니다.',
-      order: {
-        id: order.orderId,
-        deliveryDate: order.deliveryDate,
-        totalAmount: items.reduce(
-          (sum, item) => sum + (item as NonNullable<typeof item>).amount,
-          0,
-        ),
-        items,
-      },
+      order: resultOrders,
     };
   }
 }
