@@ -64,8 +64,8 @@ export class OrdersController {
       },
     },
   })
-  async postOrder(@Body() data: CreateOrderDto, @CurrentUser() userId: number) {
-    return await this.orderService.createOrder(data, userId);
+  async postOrder(@Body() data: CreateOrderDto, @CurrentUser() user: User) {
+    return await this.orderService.createOrder(data, user.id);
   }
 
   @Get()

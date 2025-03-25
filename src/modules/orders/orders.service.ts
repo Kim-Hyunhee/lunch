@@ -53,25 +53,32 @@ export class OrdersService {
       const invalidProducts = items.filter(
         (item) => !allProductIds.has(item.productId),
       );
-      if (invalidProducts.length) {
+      if (invalidProducts.length > 0) {
         throw new BadRequestException(
           `유효하지 않은 상품: ${invalidProducts.map((p) => p.productId).join(', ')}`,
         );
       }
 
-      const order = await this.prisma.order.create({
-        data: {
-          userId,
-          deliveryDate,
-          comment,
-          orderItems: {
-            create: items.map(({ productId, quantity }) => ({
-              productId,
-              quantity,
-            })),
+      const order = await this.prisma.$transaction(async (prisma) => {
+        // 주문(Order) 생성
+        const newOrder = await prisma.order.create({
+          data: {
+            userId,
+            deliveryDate: new Date(deliveryDate), // Date 변환
+            comment,
           },
-        },
-        include: { orderItems: true },
+        });
+
+        // 주문 아이템(OrderItem) 생성
+        await prisma.orderItem.createMany({
+          data: items.map(({ productId, quantity }) => ({
+            orderId: newOrder.orderId, // 생성된 orderId 사용
+            productId,
+            quantity,
+          })),
+        });
+
+        return newOrder; // 최종 생성된 주문 반환
       });
 
       return { success: true, message: '주문이 완료되었습니다.', order };
@@ -84,14 +91,13 @@ export class OrdersService {
 
   async findOrder(deliveryDate: string, userId: number) {
     const date = new Date(deliveryDate);
-
     if (isNaN(date.getTime())) {
       throw new BadRequestException('Invalid date format');
     }
 
     const allProducts = await this.fetchAllProducts();
     const order = await this.prisma.order.findFirst({
-      where: { deliveryDate, userId },
+      where: { deliveryDate: date, userId },
       include: { orderItems: true },
     });
     if (!order) {

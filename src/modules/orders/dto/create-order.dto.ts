@@ -55,7 +55,7 @@ export class OrderResponseDto {
   @ApiProperty({ example: 5 })
   orderId: number;
 
-  @ApiProperty({ example: '2025-02-20' })
+  @ApiProperty({ example: '2025-02-20T00:00:00.000Z' })
   deliveryDate: string;
 
   @ApiProperty({ example: 3 })
