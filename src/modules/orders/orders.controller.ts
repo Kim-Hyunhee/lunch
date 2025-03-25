@@ -21,8 +21,8 @@ import { CurrentUser } from '../../decorators/currentUser.dto';
 import { FindOrderDto, FindOrderResponseDto } from './dto/find-order.dto';
 import { User } from '.prisma/client';
 
-@Controller('orders')
-@ApiTags('orders')
+@Controller('user/orders')
+@ApiTags('user/orders')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JwtToken')
 export class OrdersController {

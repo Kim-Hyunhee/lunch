@@ -8,7 +8,7 @@ import { User } from '.prisma/client';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JwtToken')
 @Controller('user/product-price')
-@ApiTags('user/product-price')
+@ApiTags('product-price')
 export class UserProductPricesController {
   constructor(private productPriceService: ProductPricesService) {}
 
