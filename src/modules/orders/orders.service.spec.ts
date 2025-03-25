@@ -5,10 +5,9 @@ import { ProductPricesService } from '../product-prices/product-prices.service';
 import { HttpService } from '@nestjs/axios';
 import { NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { of } from 'rxjs';
 
 jest.mock('@nestjs/axios');
-const mockedHttpService = HttpService as jest.Mocked<typeof HttpService>;
+// const mockedHttpService = HttpService as jest.Mocked<typeof HttpService>;
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -65,15 +64,25 @@ describe('OrdersService', () => {
       const userId = 123;
 
       httpService.get = jest.fn().mockResolvedValueOnce({
-        data: { data: [{ id: 1, name: 'Product 1', price: 10000 }] },
+        data: [{ id: 1, name: 'Product 1', price: 10000 }],
       });
 
-      prisma.order.create = jest.fn().mockResolvedValueOnce({
-        id: 1,
+      const mockCreateOrder = jest.fn().mockResolvedValue({
+        orderId: 1,
         userId,
-        deliveryDate: orderData.deliveryDate,
+        deliveryDate: new Date(orderData.deliveryDate),
         comment: orderData.comment,
-        orderItems: [{ productId: 1, quantity: 2 }],
+      });
+
+      const mockCreateManyOrderItems = jest.fn().mockResolvedValue({
+        count: orderData.items.length,
+      });
+
+      prisma.$transaction = jest.fn().mockImplementation(async (callback) => {
+        return callback({
+          order: { create: mockCreateOrder },
+          orderItem: { createMany: mockCreateManyOrderItems },
+        });
       });
 
       const result = await service.createOrder(orderData, userId);
@@ -83,7 +92,18 @@ describe('OrdersService', () => {
         message: '주문이 완료되었습니다.',
         order: expect.any(Object),
       });
-      expect(prisma.order.create).toHaveBeenCalled();
+
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(mockCreateOrder).toHaveBeenCalledWith({
+        data: {
+          userId,
+          deliveryDate: new Date(orderData.deliveryDate),
+          comment: orderData.comment,
+        },
+      });
+      expect(mockCreateManyOrderItems).toHaveBeenCalledWith({
+        data: [{ orderId: 1, productId: 1, quantity: 2 }],
+      });
     });
   });
 
@@ -101,7 +121,7 @@ describe('OrdersService', () => {
       prisma.order.findFirst = jest.fn().mockResolvedValueOnce({
         orderId: 1,
         userId,
-        deliveryDate,
+        deliveryDate: new Date(deliveryDate),
         orderItems: [{ productId: 1, quantity: 2 }],
       });
 

@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 describe('ProductPricesService', () => {
   let service: ProductPricesService;
