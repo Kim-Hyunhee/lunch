@@ -67,6 +67,10 @@ describe('OrdersService', () => {
         data: [{ id: 1, name: 'Product 1', price: 10000 }],
       });
 
+      productPriceService.findManyProductPriceForUser = jest
+        .fn()
+        .mockResolvedValue([]); // 숨겨진 상품만 가져옴
+
       const mockCreateOrder = jest.fn().mockResolvedValue({
         orderId: 1,
         userId,
@@ -104,6 +108,27 @@ describe('OrdersService', () => {
       expect(mockCreateManyOrderItems).toHaveBeenCalledWith({
         data: [{ orderId: 1, productId: 1, quantity: 2 }],
       });
+    });
+
+    it('should throw an error if hidden products are included in the order', async () => {
+      const orderData: CreateOrderDto = {
+        deliveryDate: '2025-03-25',
+        comment: 'Fast delivery please',
+        items: [{ productId: 1, quantity: 1 }], // 숨겨진 상품 주문 시도
+      };
+      const userId = 123;
+
+      httpService.get = jest.fn().mockResolvedValueOnce({
+        data: [{ id: 1, name: 'Product 1', price: 10000 }],
+      });
+
+      productPriceService.findManyProductPriceForUser = jest
+        .fn()
+        .mockResolvedValue([{ productId: 1, hidden: true, userId: 123 }]); // 숨겨진 상품이 있음 (즉, productId: 2는 hidden 상태)
+
+      await expect(service.createOrder(orderData, userId)).rejects.toThrow(
+        new BadRequestException(`주문할 수 없는 상품: 1`),
+      );
     });
   });
 
